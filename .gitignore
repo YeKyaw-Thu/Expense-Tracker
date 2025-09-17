@@ -1,19 +1,24 @@
-# dependencies
-/node_modules
+# Backend node modules
+backend/node_modules/
 
-# env files
-.env
+# Frontend node modules
+frontend/node_modules/
 
-# build outputs
-/.next
-/dist
-/build
+# Environment files
+backend/.env
+frontend/.env.local
 
-# logs
+# Build outputs
+backend/.next/
+frontend/dist/
+backend/build/
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# misc
+# Misc / OS / Editor
 .DS_Store
+.vscode/
