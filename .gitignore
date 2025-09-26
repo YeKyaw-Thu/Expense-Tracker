@@ -10,6 +10,7 @@ frontend/.env.local
 
 # Build outputs
 backend/.next/
+frontend/.next/
 frontend/dist/
 backend/build/
 
