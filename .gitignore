@@ -1,25 +1,48 @@
-# Backend node modules
+# ----------------------
+# Node modules
+# ----------------------
 backend/node_modules/
-
-# Frontend node modules
 frontend/node_modules/
 
+# ----------------------
 # Environment files
+# ----------------------
 backend/.env
 frontend/.env.local
+.env
+.env.*.local
 
+# ----------------------
 # Build outputs
+# ----------------------
 backend/.next/
+backend/build/
 frontend/.next/
 frontend/dist/
-backend/build/
+frontend/out/
 
+# TypeScript / Next.js
+frontend/next-env.d.ts
+*.tsbuildinfo
+
+# ----------------------
 # Logs
+# ----------------------
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Misc / OS / Editor
+# ----------------------
+# OS / Editor
+# ----------------------
 .DS_Store
 .vscode/
+.idea/
+
+# ----------------------
+# Optional / temp
+# ----------------------
+*.swp
+*.swo
+*.bak
