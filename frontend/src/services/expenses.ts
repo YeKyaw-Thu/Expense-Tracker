@@ -1,31 +1,28 @@
 import API from "./api";
 
 export interface Expense {
-  id?: number;
+  _id?: string;
   title: string;
   amount: number;
   category: string;
-  date: string;
+  description?: string;
+  createdAt?: string;
 }
 
 // Get all expenses
-export const getExpenses = async (): Promise<Expense[]> => {
+export const getExpenses = async () => {
   const response = await API.get("/expenses");
   return response.data;
 };
 
 // Add a new expense
-export const addExpense = async (expense: Expense) => {
+export const addExpense = async (expense: Omit<Expense, "_id" | "createdAt">) => {
   const response = await API.post("/expenses", expense);
   return response.data;
 };
 
-// Update an expense
-export const updateExpense = (id: string, data: {
-  amount?: number;
-  category?: string;
-  description?: string;
-}) => API.put(`/expenses/${id}`, data);
-
 // Delete an expense
-export const deleteExpense = (id: string) => API.delete(`/expenses/${id}`);
+export const deleteExpense = async (id: string) => {
+  const response = await API.delete(`/expenses/${id}`);
+  return response.data;
+};
