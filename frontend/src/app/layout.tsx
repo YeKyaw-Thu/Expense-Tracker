@@ -1,9 +1,23 @@
 import "./global.css";
+import { AuthProvider } from "@/context/AuthContext";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata = {
+  title: "Expense Tracker",
+  description: "Track your expenses efficiently",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 text-gray-800">{children}</body>
+      <body>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }
