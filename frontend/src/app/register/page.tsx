@@ -15,7 +15,7 @@ export default function RegisterPage() {
     const res = await registerUser(form);
     if (res.token) {
       login(res.token);
-      router.push("/expenses");
+      router.push("/expense");
     } else {
       alert(res.message || "Registration failed");
     }

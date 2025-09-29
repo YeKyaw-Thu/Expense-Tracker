@@ -19,7 +19,7 @@ export default function LoginPage() {
       const res = await loginUser(form);
       if (res.token) {
         login(res.token);
-        router.push("/expenses");
+        router.push("/expense");
       } else {
         setError(res.message || "Login failed");
       }
