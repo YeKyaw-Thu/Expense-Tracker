@@ -19,7 +19,7 @@ export async function loginUser(data: { email: string; password: string }) {
 }
 
 export async function getCurrentUser(token: string) {
-  const res = await fetch(`${API_BASE}/me`, {
+  const res = await fetch(`${API_BASE}/auth/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.json();
