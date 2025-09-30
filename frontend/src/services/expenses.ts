@@ -1,3 +1,4 @@
+// frontend/src/services/expenses.ts
 import API from "./api";
 
 export interface Expense {
@@ -15,14 +16,21 @@ export const getExpenses = async () => {
   return response.data;
 };
 
-// Add a new expense
-export const addExpense = async (expense: Omit<Expense, "_id" | "createdAt">) => {
+export type AddExpensePayload = Omit<Expense, "_id">;
+
+export const addExpense = async (expense: AddExpensePayload): Promise<Expense> => {
   const response = await API.post("/expenses", expense);
   return response.data;
 };
 
+
 // Delete an expense
-export const deleteExpense = async (id: string) => {
+// export const deleteExpense = async (id: string) => {
+//   const response = await API.delete(`/expenses/${id}`);
+//   return response.data;
+// };
+
+export const deleteExpense = async (id: string): Promise<{ message: string }> => {
   const response = await API.delete(`/expenses/${id}`);
   return response.data;
 };
