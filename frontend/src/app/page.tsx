@@ -9,7 +9,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/expenses");
+      router.push("/expense");
     } else {
       router.push("/login");
     }
