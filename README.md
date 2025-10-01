@@ -59,3 +59,6 @@ Frontend runs on http://localhost:3000 and backend on http://localhost:4000 by d
 backend/       # Express server, API routes, models
 frontend/      # Next.js frontend, components, pages
 ```
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
