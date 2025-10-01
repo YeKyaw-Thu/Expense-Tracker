@@ -7,7 +7,8 @@ export interface Expense {
   amount: number;
   category: string;
   description?: string;
-  createdAt?: string;
+  date?: string;
+  createdAt?: string;  // <-- system-generated, don't edit
 }
 
 // Get all expenses
@@ -23,6 +24,10 @@ export const addExpense = async (expense: AddExpensePayload): Promise<Expense> =
   return response.data;
 };
 
+export const updateExpense = async (id: string, expense: Omit<Expense, "_id" | "createdAt">) => {
+  const response = await API.put(`/expenses/${id}`, expense);
+  return response.data;
+};
 
 // Delete an expense
 // export const deleteExpense = async (id: string) => {
