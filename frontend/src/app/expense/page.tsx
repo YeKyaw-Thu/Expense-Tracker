@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   getExpenses,
   addExpense as apiAddExpense,
+  updateExpense as apiUpdateExpense,
   deleteExpense as apiDeleteExpense,
   Expense,
   AddExpensePayload,
@@ -24,7 +25,9 @@ const categories = [
 export default function ExpensesPage() {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
   const router = useRouter();
+
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "",
     amount: "",
@@ -32,6 +35,7 @@ export default function ExpensesPage() {
     date: "",
   });
 
+  // Fetch expenses on page load
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/login");
@@ -40,7 +44,7 @@ export default function ExpensesPage() {
 
     const fetchExpenses = async () => {
       try {
-        const data = await getExpenses();
+        const data = await getExpenses(); // backend already sorted by date
         setExpenses(data);
       } catch (err) {
         console.error("Failed to fetch expenses:", err);
@@ -52,51 +56,61 @@ export default function ExpensesPage() {
 
   if (!isAuthenticated) return <div>Redirecting...</div>;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleAdd = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const payload: AddExpensePayload = {
         title: form.title,
         amount: parseFloat(form.amount),
         category: form.category,
-        createdAt: form.date,
+        date: form.date,
       };
 
-      const savedExpense = await apiAddExpense(payload);
+      if (editingId) {
+        // Update existing expense
+        await apiUpdateExpense(editingId, payload);
+        const data = await getExpenses();
+        setExpenses(data);
+        setEditingId(null);
+      } else {
+        // Add new expense
+        await apiAddExpense(payload);
+        const data = await getExpenses();
+        setExpenses(data);
+      }
 
-      const expenseWithId: Expense = {
-        _id: savedExpense._id || Date.now().toString(),
-        title: form.title,
-        amount: parseFloat(form.amount),
-        category: form.category,
-        createdAt: form.date,
-      };
-
-      setExpenses((prev) => [...prev, expenseWithId]);
+      // Reset form
       setForm({ title: "", amount: "", category: categories[0], date: "" });
     } catch (err) {
-      console.error("Failed to add expense:", err);
+      console.error("Failed to save expense:", err);
     }
   };
 
   const handleDelete = async (id: string | undefined) => {
-    if (!id) return;
-    if (!confirm("Are you sure?")) return;
+    if (!id || !confirm("Are you sure?")) return;
 
     try {
       await apiDeleteExpense(id);
-      setExpenses((prev) => prev.filter((e) => e._id !== id)); // remove from UI
+      setExpenses(prev => prev.filter(e => e._id !== id));
     } catch (err) {
       console.error("Failed to delete expense:", err);
     }
   };
 
   const handleEdit = (expense: Expense) => {
-    console.log("Edit", expense);
+    setEditingId(expense._id!);
+    setForm({
+      title: expense.title,
+      amount: expense.amount.toString(),
+      category: expense.category,
+      date: expense.date?.slice(0, 10) || "",
+    });
   };
 
   return (
@@ -117,10 +131,15 @@ export default function ExpensesPage() {
 
       {/* Main Content */}
       <div className="p-6 max-w-4xl mx-auto space-y-6">
-        {/* Add Expense Form */}
+        {/* Add / Edit Form */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-bold mb-4">Add Expense</h2>
-          <form className="grid grid-cols-1 md:grid-cols-4 gap-4" onSubmit={handleAdd}>
+          <h2 className="text-lg font-bold mb-4">
+            {editingId ? "Edit Expense" : "Add Expense"}
+          </h2>
+          <form
+            className="grid grid-cols-1 md:grid-cols-4 gap-4"
+            onSubmit={handleSubmit}
+          >
             <input
               type="text"
               name="title"
@@ -153,7 +172,7 @@ export default function ExpensesPage() {
               onChange={handleChange}
               className="px-4 py-2 border rounded focus:ring-2 focus:ring-blue-400"
             >
-              {categories.map((cat) => (
+              {categories.map(cat => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>
@@ -163,12 +182,12 @@ export default function ExpensesPage() {
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 col-span-1 md:col-span-4 md:justify-self-end"
             >
-              Add Expense
+              {editingId ? "Update Expense" : "Add Expense"}
             </button>
           </form>
         </div>
 
-        {/* Expense List Table */}
+        {/* Expense List */}
         <div className="bg-white p-6 rounded-lg shadow overflow-x-auto">
           <h2 className="text-lg font-bold mb-4">Your Expenses</h2>
           <table className="w-full table-auto border-collapse border">
@@ -184,12 +203,16 @@ export default function ExpensesPage() {
             <tbody>
               {expenses.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="text-center py-4">No expenses yet</td>
+                  <td colSpan={5} className="text-center py-4">
+                    No expenses yet
+                  </td>
                 </tr>
               ) : (
-                expenses.map((exp) => (
-                  <tr key={exp._id || `${exp.title}-${exp.amount}-${exp.createdAt}-${Date.now()}`}>
-                    <td className="border px-4 py-2">{exp.createdAt?.slice(0, 10)}</td>
+                expenses.map(exp => (
+                  <tr
+                    key={exp._id || `${exp.title}-${exp.amount}-${exp.date}-${Date.now()}`}
+                  >
+                    <td className="border px-4 py-2">{exp.date?.slice(0, 10)}</td>
                     <td className="border px-4 py-2">{exp.title}</td>
                     <td className="border px-4 py-2">{exp.category}</td>
                     <td className="border px-4 py-2">${exp.amount}</td>
