@@ -17,6 +17,7 @@ frontend/.env.local
 # ----------------------
 backend/.next/
 backend/build/
+backend/src/seeder/
 frontend/.next/
 frontend/dist/
 frontend/out/
