@@ -1,12 +1,12 @@
 "use client";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { loginUser } from "@/lib/api";
-import { AuthContext } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth(); // ← use the hook, NOT useContext
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -18,8 +18,8 @@ export default function LoginPage() {
     try {
       const res = await loginUser(form);
       if (res.token) {
-        login(res.token);
-        router.push("/expense");
+        login(res.name, res.role); // pass name and role, not token
+        router.push("/dashboard"); // go to dashboard after login
       } else {
         setError(res.message || "Login failed");
       }
@@ -66,12 +66,6 @@ export default function LoginPage() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p className="mt-4 text-center text-gray-500">
-          Don’t have an account?{" "}
-          <a href="/register" className="text-blue-500 hover:underline">
-            Register
-          </a>
-        </p>
       </div>
     </div>
   );
