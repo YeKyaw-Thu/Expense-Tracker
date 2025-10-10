@@ -4,6 +4,8 @@ A full-stack Expense Tracker application to manage personal expenses, categories
 
 ---
 
+![status](https://img.shields.io/badge/status-in_development-yellow)
+
 ## Features
 
 - Add, view, update, and delete expenses.
